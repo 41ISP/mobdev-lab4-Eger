@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, {AxiosResponse} from "axios";
 import {WeatherForecast} from "./api.dto.ts";
 import {IWeatherForecastRdo} from "./api.rdo.ts";
 
@@ -11,7 +11,7 @@ const BaseURL = 'https://api.open-meteo.com/v1/forecast'
 const OpenMetioAPIAxios = axios.create({baseURL: BaseURL})
 
 const OpenMetioAPI = {
-	getWeatherForecast: async (weatherForecast: WeatherForecast) => {
+	getWeatherForecast: async (weatherForecast: WeatherForecast):Promise<AxiosResponse<IWeatherForecastRdo> | undefined> => {
 		try {
 			return await OpenMetioAPIAxios.get<IWeatherForecastRdo>(
 				`${BaseURL}`,

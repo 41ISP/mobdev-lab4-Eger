@@ -1,35 +1,96 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import {useEffect, useState} from "react";
+import {Alert, Box, IconButton, Typography} from "@mui/joy";
+import ReportIcon from '@mui/icons-material/Report';
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
+import OpenMeteoAPI from "./shared/api/api.ts";
+import {DailyDto, Temperature, WeatherForecast} from "./shared/api/api.dto.ts";
+import {IWeatherForecastRdo} from "./shared/api/api.rdo.ts";
 
 function App() {
-  const [count, setCount] = useState(0)
+	const [hasLocation, setHasLocation] = useState(false);
+	const [alert, setAlert] = useState(false);
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+	const [weatherForecast, setWeatherForecast] = useState<IWeatherForecastRdo>();
+
+	useEffect(() => {
+		navigator.permissions.query({
+			name: 'geolocation'
+		}).then(function (result) {
+			if (result.state === 'denied') {
+				setAlert(true);
+				return
+			} else {
+				setAlert(false);
+			}
+		});
+
+		if (hasLocation) return
+
+		navigator.geolocation.getCurrentPosition(
+			async (pos: GeolocationPosition) => {
+				setHasLocation(true);
+				console.log(pos.coords.latitude, pos.coords.longitude);
+
+				const result = await OpenMeteoAPI.getWeatherForecast(
+					new WeatherForecast(
+						pos.coords.latitude,
+						pos.coords.longitude,
+						Temperature.allTemperature,
+						DailyDto.sunriseAndSunset
+					)
+				)
+				if (result?.data) {
+					console.log(result.data)
+					setWeatherForecast(result.data)
+				}
+			})
+	}, [hasLocation]);
+
+	useEffect(() => {
+		console.log(weatherForecast);
+	}, [weatherForecast]);
+
+	return (
+		<>
+			<Box
+				sx={{
+					display: 'flex',
+					flexDirection: 'column',
+					alignItems: 'center'
+				}}
+			>
+				{
+					alert &&
+                    <Alert
+                        sx={{maxWidth: 350}}
+                        variant={"soft"}
+                        color={"danger"}
+                        startDecorator={<ReportIcon/>}
+                        endDecorator={
+							<IconButton onClick={() => setAlert(false)} variant="soft" color={'danger'}>
+								<CloseRoundedIcon/>
+							</IconButton>
+						}
+                    >
+                        <div>
+                            <Typography level="body-md">
+                                Ошибка
+                            </Typography>
+                            <Typography level="body-sm" color={"danger"}>
+                                Необходимо разрешение на определение местоположения
+                            </Typography>
+                        </div>
+                    </Alert>
+				}
+			</Box>
+			{
+				weatherForecast &&
+				<>
+					
+				</>
+			}
+		</>
+	)
 }
 
 export default App
