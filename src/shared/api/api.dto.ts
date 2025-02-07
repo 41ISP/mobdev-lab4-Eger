@@ -2,6 +2,11 @@ interface IWeatherForecast {
 	latitude: number;
 	longitude: number;
 	temperature: string;
+	relative_humidity_2m: string;
+	precipitation: string;
+	wind_speed_10m: string;
+	wind_direction_10m: string;
+	wind_gusts_10m: string;
 	daily: string;
 	timezone: string;
 }
@@ -25,11 +30,23 @@ export class WeatherForecast implements IWeatherForecast {
 
 	readonly temperature: string;
 
+	readonly hourly: string;
+
 	readonly daily: string;
 
 	readonly timezone: string;
 
-	constructor(latitude: number, longitude: number, temperature: Temperature, daily: DailyDto, timezone = 'auto') {
+	readonly relative_humidity_2m: string = 'relative_humidity_2m'
+
+	readonly precipitation: string = 'precipitation';
+
+	readonly wind_speed_10m: string = 'wind_speed_10m';
+
+	readonly wind_direction_10m: string = 'wind_direction_10m';
+
+	readonly wind_gusts_10m: string = 'wind_gusts_10m';
+
+	constructor(latitude: number, longitude: number, temperature: Temperature, daily: DailyDto,	timezone = 'auto') {
 		this.latitude = latitude
 		this.longitude = longitude
 		this.timezone = timezone
@@ -69,5 +86,12 @@ export class WeatherForecast implements IWeatherForecast {
 				throw new Error(`Unsupported daily: ${daily}`);
 			}
 		}
+
+		this.hourly = this.temperature + ','
+			+ this.relative_humidity_2m + ','
+			+ this.precipitation + ','
+			+ this.wind_speed_10m + ','
+			+ this.wind_direction_10m + ','
+			+ this.wind_gusts_10m;
 	}
 }

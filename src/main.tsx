@@ -6,7 +6,9 @@ import {CssBaseline, CssVarsProvider} from "@mui/joy";
 
 createRoot(document.getElementById('root')!).render(
 	<CssVarsProvider>
-		<ColorSchemeToggle/>
+		<div style={{display: 'flex', justifyContent: 'end'}}>
+			<ColorSchemeToggle/>
+		</div>
 		<CssBaseline/>
 		<RouterProvider router={router}/>
 	</CssVarsProvider>

@@ -28,12 +28,14 @@ export interface IHourly {
 	time: string[];
 	temperature_2m: number[];
 	apparent_temperature: number[];
+	wind_speed_10m: number[];
 }
 
 export interface IHourlyUnits {
 	time: string;
 	temperature_2m: string;
 	apparent_temperature: string;
+	wind_speed_10m: string;
 }
 
 export interface IResponse {

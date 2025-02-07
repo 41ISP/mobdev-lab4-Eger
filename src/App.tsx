@@ -1,10 +1,14 @@
 import { useEffect, useState } from "react";
-import { Alert, Box, IconButton, Input, Typography } from "@mui/joy";
+import {Alert, Box, IconButton, Input, Typography} from "@mui/joy";
+import SearchIcon from '@mui/icons-material/Search';
 import ReportIcon from '@mui/icons-material/Report';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import { OpenMeteoAPI, YandexGeoAPI } from "./shared/api/api.ts";
 import { DailyDto, Temperature, WeatherForecast } from "./shared/api/api.dto.ts";
 import { IWeatherForecastRdo } from "./shared/api/api.rdo.ts";
+import {Form} from "react-router-dom";
+import WeatherList from "./widgets/WeatherList/WeatherList.tsx";
+import DetailedWeather from "./widgets/DetailedWeather/DetailedWeather.tsx";
 
 function App() {
 	const [address, setAddress] = useState('')
@@ -95,7 +99,7 @@ function App() {
 		}
 	}
 
-	useEffect(() => {
+	const onSubmit = () => {
 		const timeoutId = setTimeout(async () => {
 			const pos = await getCity()
 
@@ -106,7 +110,7 @@ function App() {
 		}, 500);
 
 		return () => clearTimeout(timeoutId);
-	}, [address])
+	}
 
 	useEffect(() => {
 		const s = async () => search()
@@ -145,15 +149,24 @@ function App() {
 						</div>
 					</Alert>
 				}
-				<Input
-					placeholder="Населенный пункт"
-					onChange={(e) => { setAddress(e.target.value) }}>
-					{address}
-				</Input>
+				<Form
+					style={{display: 'flex', justifyContent: 'center', width: '100%'}}
+					onSubmit={onSubmit}>
+					<Input
+						sx={{width:'70%'}}
+						placeholder="Населенный пункт"
+						onChange={(e) => { setAddress(e.target.value) }}>
+						{address}
+					</Input>
+					<IconButton type="submit">
+						<SearchIcon/>
+					</IconButton>
+				</Form>
 				{
 					weatherForecast &&
 					<>
-						
+						<DetailedWeather weatherForecast={weatherForecast}/>
+						<WeatherList weatherForecast={weatherForecast} />
 					</>
 				}
 			</Box>
